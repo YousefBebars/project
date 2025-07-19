@@ -1,5 +1,6 @@
 from django.shortcuts import render, redirect, get_object_or_404
-from .models import Post
+from .models import Post, Comment
+from .forms import CommentForm
 from .forms import PostForm
 from django.contrib.auth.decorators import login_required
 def home(request):
@@ -45,4 +46,30 @@ def post_edit(request, pk):
             return redirect('post_list')
     else:
         form = PostForm(instance=post)
-    return render(request, 'blog/post_form.html', {'form': form})
+    return render(request, 'post/post_form.html', {'form': form})
+@login_required
+def post_delete(request, pk):
+    post = get_object_or_404(Post, pk=pk)
+
+    if post.author != request.user:
+        return redirect('post_list')  # 🚫 Prevent other users from deleting
+
+    post.delete()
+    return redirect('post_list')
+
+@login_required
+def add_comment(request, pk):
+    post = get_object_or_404(Post, pk=pk)
+
+    if request.method == 'POST':
+        form = CommentForm(request.POST)
+        if form.is_valid():
+            comment = form.save(commit=False)
+            comment.post = post
+            comment.user = request.user
+            comment.save()
+            return redirect('post_list')  # Or a detail page if you have it
+    else:
+        form = CommentForm()
+
+    return render(request, 'post/comment.html', {'form': form})
