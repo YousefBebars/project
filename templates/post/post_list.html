@@ -1,0 +1,13 @@
+{% extends "main/base.html" %}
+
+{% block content %}
+{% for post in posts %}
+  <h2>{{ post.title }}</h2>
+  <p>{{ post.content }}</p>
+    <p><small>Posted on {{ post.author }}</small></p>
+{% endfor %}
+<a href="{% url 'post_create' %}" class="btn btn-success mb-3">+ New Post</a>
+
+{% endblock %}
+
+{% block title %}Post List - Usef's Blog{% endblock %}
