@@ -10,6 +10,8 @@ class Post(models.Model):
         ordering = ['-published_date']
     def __str__(self):
         return self.title
+    def total_likes(self):
+        return self.likes.count()
 
 class Comment(models.Model):
     post = models.ForeignKey(Post, on_delete=models.CASCADE, related_name='comments')
@@ -22,12 +24,13 @@ class Comment(models.Model):
         return f'Comment by {self.user.username} on {self.post.title}'
 
 class Like(models.Model):
-    post = models.ForeignKey(Post, on_delete=models.CASCADE)
+    post = models.ForeignKey(Post, on_delete=models.CASCADE,  related_name='likes')
     user = models.ForeignKey(User, on_delete=models.CASCADE)
     class Meta:
         unique_together = ('post', 'user')  
     def __str__(self):
         return f'{self.user.username} likes {self.post.title}'
+    
 
 
 class Notification(models.Model):

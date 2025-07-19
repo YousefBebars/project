@@ -30,6 +30,15 @@
           {% endfor %}
         </div>
       </div>
+      <form action="{% url 'toggle_like' post.pk %}" method="POST" style="display:inline;">
+  {% csrf_token %}
+  {% if request.user in post.likes.all %}
+    <button class="btn btn-sm btn-danger"> 👎🏻 ({{ post.total_likes }})</button>
+  {% else %}
+    <button class="btn btn-sm btn-outline-danger"> 👍🏻 Like ({{ post.total_likes }})</button>
+  {% endif %}
+</form>
+
     </div>
   {% endfor %}
 

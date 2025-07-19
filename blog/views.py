@@ -1,5 +1,5 @@
 from django.shortcuts import render, redirect, get_object_or_404
-from .models import Post, Comment
+from .models import Post, Comment,Like
 from .forms import CommentForm
 from .forms import PostForm
 from django.contrib.auth.decorators import login_required
@@ -73,3 +73,20 @@ def add_comment(request, pk):
         form = CommentForm()
 
     return render(request, 'post/comment.html', {'form': form})
+
+
+@login_required
+
+def toggle_like(request, pk):
+    post = get_object_or_404(Post, pk=pk)
+    user = request.user
+
+    # Check if user already liked the post
+    existing_like = Like.objects.filter(post=post, user=user).first()
+
+    if existing_like:
+        existing_like.delete()  # Unlike
+    else:
+        Like.objects.create(post=post, user=user)  # Like
+
+    return redirect('post_list')  # or wherever you want                
